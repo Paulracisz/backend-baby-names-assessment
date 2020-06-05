@@ -37,15 +37,37 @@ import argparse
 
 
 def extract_names(filename):
+    filenameYear = filename[4:8]
+    names = []
+    names_dict = {}
+    with open(filename, "r") as textfile:
+        matches = re.findall(
+            r"<td>(.*?)</td><td>(.*?)</td><td>(.*?)</td>", "\n".join(textfile))
+        for tup in matches:
+            # tup[0] >> rank
+            # tup[1] >> boy
+            # tup[2] >> girl
+            if tup[1] not in names_dict:
+                names_dict[tup[1]] = tup[0]
+            if tup[2] not in names_dict:
+                names_dict[tup[2]] = tup[0]
+        keysList = sorted(names_dict.keys())
+        keyValueList = [filenameYear]
+        for key in keysList:
+            keyValueList.append(key + " " + names_dict[key])
+
+    return keyValueList
+    # get the keys from the dict
+    # sort them alphabetically
+    # loop through the keys to get values
+    # make a list with "key value" strings
+    # sortedNames = names.sort()
     """
     Given a single file name for babyXXXX.html, returns a
     single list starting with the year string followed by
     the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
-    names = []
-    # +++your code here+++
-    return names
 
 
 def create_parser():
@@ -59,6 +81,14 @@ def create_parser():
     # e.g. 'baby*.html' will work.
     parser.add_argument('files', help='filename(s) to parse', nargs='+')
     return parser
+
+
+def writeFile(names):
+    f = open("name", "w+")
+    for name in names:
+        nameLine = "".join(name) + "\n"
+        f.write(nameLine)
+    f.close()
 
 
 def main(args):
@@ -76,6 +106,18 @@ def main(args):
 
     # option flag
     create_summary = ns.summaryfile
+    if create_summary:
+        for filename in file_list:
+            names = extract_names(filename)
+            # make a new function to write a file
+            writeFile(names)
+            # call the function with names
+    else:
+        for filename in file_list:
+            names = extract_names(filename)
+            for name in names:
+                print(name)
+            # call the function to write a new file
 
     # For each filename, call `extract_names()` with that single file.
     # Format the resulting list as a vertical list (separated by newline \n).
