@@ -38,7 +38,6 @@ import argparse
 
 def extract_names(filename):
     filenameYear = filename[4:8]
-    names = []
     names_dict = {}
     with open(filename, "r") as textfile:
         matches = re.findall(
@@ -55,7 +54,7 @@ def extract_names(filename):
         keyValueList = [filenameYear]
         for key in keysList:
             keyValueList.append(key + " " + names_dict[key])
-
+    print(keyValueList)
     return keyValueList
     # get the keys from the dict
     # sort them alphabetically
@@ -83,8 +82,8 @@ def create_parser():
     return parser
 
 
-def writeFile(names):
-    f = open("name", "w+")
+def writeFile(names, filename):
+    f = open(filename + ".summary", "w+")
     for name in names:
         nameLine = "".join(name) + "\n"
         f.write(nameLine)
@@ -110,7 +109,7 @@ def main(args):
         for filename in file_list:
             names = extract_names(filename)
             # make a new function to write a file
-            writeFile(names)
+            writeFile(names, filename)
             # call the function with names
     else:
         for filename in file_list:
